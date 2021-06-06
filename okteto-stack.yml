@@ -1,0 +1,36 @@
+services:
+  api:
+    build: api
+    ports:
+    - 8080:8080
+    environment:
+      SPRING_DATASOURCE_USERNAME: okteto
+      SPRING_DATASOURCE_PASSWORD: password123
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/polls?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false
+  frontend:
+    build: frontend
+    ports:
+    - 80:80
+  mysql:
+    image: bitnami/mysql:8.0
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/bitnami/mysql/data
+    environment:
+      MYSQL_USER: okteto
+      MYSQL_PASSWORD: password123
+      MYSQL_DATABASE: polls
+
+volumes:
+  mysql_data:
+    driver_opts:
+      size: 1Gi
+
+endpoints:
+  - path: /
+    service: frontend
+    port: 80
+  - path: /api
+    service: api
+    port: 8080
